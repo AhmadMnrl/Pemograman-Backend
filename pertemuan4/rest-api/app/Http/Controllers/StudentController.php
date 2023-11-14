@@ -19,17 +19,60 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::all();
-        if ($students->isEmpty()) {
-            return response()->json(["message" => "Data Not found"], 404);
+        // Get all students
+        $students = Student::query();
+
+        // Filter by name if provided
+        $name = $request->input('filter.nama');
+        if ($name) {
+            $students->where('nama', $name);
         }
-        $data = [
-            "message" => "Get All Users",
-            "data" => $students
+
+        // Get sorting parameters
+        $order = $request->input('filter.order', 'asc');
+        $sort = $request->input('filter.sort', 'nama');
+
+        // Pagination parameters
+        $pageLimit = $request->input('page.limit', 1);
+        $pageNumber = $request->input('page.number', 1);
+        $offset = ($pageNumber - 1) * $pageLimit;
+
+        // Apply sorting and pagination
+        $students->orderBy($sort, $order)->offset($offset)->limit($pageLimit);
+
+        // Get total count for pagination
+        $studentTotal = Student::query();
+        if ($name) {
+            $studentTotal->where('nama', $name);
+        }
+        $totalData = $studentTotal->count();
+        $totalPage = ceil($totalData / $pageLimit);
+
+        // Prepare response data
+        $pages = [
+            'pageLimit' => (int)$pageLimit,
+            'pageNumber' => (int)$pageNumber,
+            'totalData' => $totalData,
+            'totalPage' => $totalPage,
         ];
-        return response()->json($data, 200);
+
+        $data = [
+            'pages' => $pages,
+            'table' => $students->get(),
+        ];
+        if ($data['table']->count() > 0) {
+            $result = [
+                'message' => 'Success Get All Users',
+                'data' => $data,
+            ];
+        } else {
+            $result = [
+                'message' => 'Data not found',
+            ];
+        }
+        return response()->json($result, 200);
     }
     /**
      * Store a newly created resource in storage.
