@@ -11,7 +11,7 @@ class Patients extends Model
     protected $fillable = ['name', 'phone', 'address', 'status_id'];
 
     protected $primaryKey = 'id';
-    // Definisi relasi Many-to-One dengan model StatusPatient
+    // Relasi One-to-One dengan model StatusPatient
     public function status()
     {
         return $this->belongsTo(StatusPatients::class, 'status_id');

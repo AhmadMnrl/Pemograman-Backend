@@ -28,7 +28,9 @@ class PatientsController extends Controller
             }
 
             // Filtering
-            // Array assosiatif yang digunakan sebagai tampungan untuk data filter, sebaiknya apabila data yang ditampung kurang dari 5 lebih baik di deklarasikan langsung tanpa perlu ditampung kedalam variable
+            /* Array assosiatif yang digunakan sebagai tampungan untuk data filter, sebaiknya apabila data yang ditampung kurang dari 5 lebih baik di deklarasikan langsung tanpa perlu ditampung kedalam variable, 
+            tapi kali ini saya memakai array assosiatif
+            */
             $filters = [
                 'name' => 'name',
                 'address' => 'address',
@@ -54,6 +56,8 @@ class PatientsController extends Controller
             $order = $request->input('order', 'asc');
             $sort = $request->input('sort', 'name');
 
+            // var_dump($order);
+            // var_dump($sort);
             // Validate allowed sorting columns
             // Validasi untuk sorting kolom
             $allowedSortColumns = ['name', 'in_date_at', 'out_date_at', 'address'];

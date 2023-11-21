@@ -12,9 +12,9 @@ class StatusPatients extends Model
 
     protected $primaryKey = 'id';
 
-    // Definisi relasi One-to-Many dengan model Patient
+    //Relasi One-to-One dengan model Patient
     public function patients()
     {
-        return $this->hasMany(Patient::class, 'status_id');
+        return $this->hasOne(Patient::class, 'status_id');
     }
 }
