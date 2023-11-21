@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/patients/{id}', [PatientsController::class,'update']);
     Route::get('/patients/{id}', [PatientsController::class,'show']);
     Route::delete('/patients/{id}', [PatientsController::class,'destroy']);
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
