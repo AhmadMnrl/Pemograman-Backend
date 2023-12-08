@@ -1,18 +1,34 @@
-const { index, store, update, destroy} = require('./controllers/fruitController.js')
+/**
+ * TODO 9:
+ * - Import semua method FruitController
+ * - Refactor variable ke ES6 Variable
+ *
+ * @hint - Gunakan Destructing Object
+ */
 
-let main = () => {
-    console.log("Method Index - menampilkan Buah")
-    index()
-    console.log('-------------------------')
-    console.log("Method store - Menambahkan Buah Pisang")
-    store("Pisang")
-    console.log('-------------------------')
-    console.log("Method update - Update data 0 menjadi kelapa")
-    update(0,"Kelapa")
-    console.log('-------------------------')
-    console.log("Method destroy - Menghapus data 0")
-    destroy(0)
-    console.log('-------------------------')
-}
+// Import semua method FruitController
+// Refactor variable ke ES6 Variable
+// Gunakan Destructing Object
+const { index, store, update, destroy } = require("./Controllers/fruitController.js");
 
-main()
+/**
+ * NOTES:
+ * - Fungsi main tidak perlu diubah
+ * - Jalankan program: nodejs app.js
+ */
+const main = () => {
+  console.log("Method index - Menampilkan Buah");
+  index();
+  console.log('-------------------------')
+  console.log("\nMethod store - Menambahkan buah Pisang");
+  store("Pisang");
+  console.log('-------------------------')
+  console.log("\nMethod update - Update data 0 menjadi Kelapa");
+  update(0, "Kelapa");
+  console.log('-------------------------')
+  console.log("\nMethod destroy - Menghapus data 0");
+  destroy(0);
+  console.log('-------------------------')
+};
+
+main();
