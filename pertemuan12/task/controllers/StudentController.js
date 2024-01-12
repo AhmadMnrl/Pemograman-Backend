@@ -50,7 +50,7 @@ class StudentController {
               },
             };
       
-            const Student = await Student.update(req.body, condition);
+            const student = await Student.update(req.body, condition);
       
             const data = {
               message: "Mengedit data student",
