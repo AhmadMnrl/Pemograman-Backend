@@ -1,41 +1,73 @@
+import { Op } from "sequelize";
 import Student from "../models/Student.js";
-import { validationResult } from 'express-validator';
 
 class StudentController {
     async index(req, res) {
-        const students = await Student.findAll();
+      try {
+        // Mendapatkan query parameters
+        const { nama, jurusan, sort, order, page = 1, pageSize = 10 } = req.query;
+
+        // Membuat objek yang akan digunakan untuk konfigurasi sorting
+        const orderConfig = sort && order ? [[sort, order.toUpperCase()]] : [];
+
+        // Membuat objek yang akan digunakan untuk konfigurasi filtering
+        const whereConfig = {};
+        if (nama) {
+            whereConfig.nama = { [Op.like]: `%${nama}%` };
+        }
+        if (jurusan) {
+            whereConfig.jurusan = jurusan;
+        }
+
+        // Menghitung offset berdasarkan halaman dan jumlah data per halaman
+        const offset = (page - 1) * pageSize;
+
+        // Mengambil data students dengan konfigurasi sorting, filtering, dan paginasi
+        const students = await Student.findAndCountAll({
+            where: whereConfig,
+            order: orderConfig,
+            offset: offset,
+            limit: parseInt(pageSize),
+        });
+
+        const totalPages = Math.ceil(students.count / pageSize);
 
         const data = {
-        message: "Menampilkkan semua students" ,
-        data: students,
+            message: "Menampilkan semua students",
+            data: students.rows,
+            page: parseInt(page),
+            pageSize: parseInt(pageSize),
+            totalData: students.count,
+            totalPages: totalPages,
         };
 
-        res. json(data);
+        res.json(data);
+      } catch (error) {
+          console.error("Error fetching students: ", error);
+          return res.status(500).json({ message: "Internal Server Error" });
+      }
     }
     async store(req, res) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-              return res.status(400).json({ errors: errors.array() });
-            }
             const { nama, nim, email, jurusan } = req.body;
-            const newStudent = await Student.create({
-                nama,
-                nim,
-                email,
-                jurusan,
-            });
-        
-            const data = {
-                message: "Menambahkan data student",
-                data: newStudent,
+
+            if (!nama || !nim || !email || !jurusan) {
+              const data = {
+              message: "Semua data harus dikirim",
             };
-        
-            res.json(data);
-            } catch (error) {
+            return res.status(422). json(data);
+            }
+            const student = await Student.create(req.body);
+
+            const data = {
+              message: "Menambahkan data student",
+              data: student,
+            };
+            return res.status(201). json(data);
+        } catch (error) {
             console.error("Error while creating student:", error);
             res.status(500).json({ error: "Internal Server Error" });
-            }
+        }
     }
     async update (req, res) {
         try {
