@@ -13,7 +13,8 @@ class Student extends Model
         'nama',
         'nim',
         'email',
-        'jurusan',
+        'major',
+        'city',
         'created_at',
         'updated_at'
     ];

@@ -25,29 +25,31 @@ class StudentController extends Controller
         $students = Student::query();
 
         // Filter by name if provided
-        $name = $request->input('filter.nama');
-        if ($name) {
-            $students->where('nama', $name);
+        $nama = $request->input('nama');
+        if ($nama) {
+            $students->where('nama', $nama);
+        }
+
+        // Filter by major if provided
+        $major = $request->input('major');
+        if ($major) {
+            $students->where('major', $major);
         }
 
         // Get sorting parameters
-        $order = $request->input('filter.order', 'asc');
-        $sort = $request->input('filter.sort', 'nama');
+        $order = $request->input('order', 'asc');
+        $sort = $request->input('sort', 'nama');
 
         // Pagination parameters
-        $pageLimit = $request->input('page.limit', 1);
-        $pageNumber = $request->input('page.number', 1);
+        $pageLimit = $request->input('PageLimit', 10);
+        $pageNumber = $request->input('PageNumber', 1);
         $offset = ($pageNumber - 1) * $pageLimit;
 
         // Apply sorting and pagination
         $students->orderBy($sort, $order)->offset($offset)->limit($pageLimit);
 
         // Get total count for pagination
-        $studentTotal = Student::query();
-        if ($name) {
-            $studentTotal->where('nama', $name);
-        }
-        $totalData = $studentTotal->count();
+        $totalData = $students->count();
         $totalPage = ceil($totalData / $pageLimit);
 
         // Prepare response data
@@ -73,6 +75,7 @@ class StudentController extends Controller
             ];
         }
         return response()->json($result, 200);
+
     }
     /**
      * Store a newly created resource in storage.
@@ -86,7 +89,8 @@ class StudentController extends Controller
             'nama' => 'required',
             'nim' => 'required',
             'email' => 'required|email',
-            'jurusan' => 'required',
+            'major' => 'required',
+            'city' => 'required',
         ]);
         $student = Student::create($validatedData);
         if ($student) {
@@ -118,7 +122,8 @@ class StudentController extends Controller
             'nama' => 'required',
             'nim' => 'required',
             'email' => 'required|email',
-            'jurusan' => 'required',
+            'major' => 'required',
+            'city' => 'required',
         ]);
         $student->update($validatedData);
         $data = [
