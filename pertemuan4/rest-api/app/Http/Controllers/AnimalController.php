@@ -6,35 +6,60 @@ use Illuminate\Http\Request;
 
 class AnimalController extends Controller
 {
-    public function __construct($data = ['Kucing','Ayam','Ikan'])
+    private $data;
+
+    public function __construct()
     {
-        $this->data = $data;
+        $this->data = ['Kucing', 'Ayam', 'Ikan'];
     }
-    public function index(){
-        echo "Menampilkan Data Animals"."<br>";
-        foreach ($this->data as $key => $value) {
-            echo $value."<br>";
+
+    public function index()
+    {
+        if (empty($this->data)) {
+            return response()->json(['message' => 'Data Animals kosong', 'data' => []], 404);
         }
+
+        return response()->json(['message' => 'Menampilkan Data Animals', 'data' => $this->data]);
     }
 
     public function store(Request $request)
     {
-        echo "Menambahkan Hewan Baru"."<br>";
-        array_push($this->data,$request->nama_hewan);
-        $this->index();
+        $newAnimal = $request->input('nama_hewan');
+
+        if (empty($newAnimal)) {
+            return response()->json(['message' => 'Nama hewan tidak boleh kosong'], 400);
+        }
+
+        array_push($this->data, $newAnimal);
+
+        return response()->json(['message' => 'Hewan baru ditambahkan!', 'data' => $this->data]);
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        $this->data[$id] = $request->nama_hewan;
-        echo "Mengupdate data hewan id $id";
-        echo "<br>";
-        $this->index();
+        if (!isset($this->data[$id])) {
+            return response()->json(['message' => "Data hewan ID $id tidak ditemukan"], 404);
+        }
+
+        $updatedAnimal = $request->input('nama_hewan');
+
+        if (empty($updatedAnimal)) {
+            return response()->json(['message' => 'Nama hewan tidak boleh kosong'], 400);
+        }
+
+        $this->data[$id] = $updatedAnimal;
+
+        return response()->json(['message' => "Data hewan ID $id telah diperbarui!", 'data' => $this->data]);
     }
 
-    public function destroy($id){
-        echo "Menghapus data hewan id $id"."<br>";
+    public function destroy($id)
+    {
+        if (!isset($this->data[$id])) {
+            return response()->json(['message' => "Data hewan ID $id tidak ditemukan"], 404);
+        }
+
         unset($this->data[$id]);
-        $this->index();
+
+        return response()->json(['message' => "Data hewan ID $id telah dihapus!", 'data' => $this->data]);
     }
 }
